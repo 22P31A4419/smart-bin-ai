@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block title %}Awareness{% endblock %}
+
+{% block content %}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+<div class="section-box">
+
+    <!-- HEADER -->
+    <h2 class="text-center mb-4 fw-bold" data-aos="fade-down">
+        🌍 Waste Management Awareness
+    </h2>
+
+    <!-- STATS -->
+    <div class="row text-center mb-4" data-aos="zoom-in">
+        <div class="col-md-4">
+            <h2 id="waste" class="fw-bold text-primary">0</h2>
+            <p>Million Tons Waste/year</p>
+        </div>
+
+        <div class="col-md-4">
+            <h2 id="recycleStat" class="fw-bold text-success">0</h2>
+            <p>% Waste Recycled</p>
+        </div>
+
+        <div class="col-md-4">
+            <h2 id="plasticStat" class="fw-bold text-danger">0</h2>
+            <p>% Ocean Plastic</p>
+        </div>
+    </div>
+
+    <!-- INFO -->
+    <div data-aos="fade-up">
+        <h4>ℹ What is Waste Management?</h4>
+        <p>
+            Waste management involves collecting, processing, and disposing waste efficiently.
+            It helps reduce pollution and protect the environment.
+        </p>
+    </div>
+
+    <!-- EFFECTS -->
+    <div class="mt-4" data-aos="fade-right">
+        <h4 class="text-danger">⚠ Effects of Poor Waste Management</h4>
+
+        <ul class="list-group">
+            <li class="list-group-item" onclick="toggleContent('air')">
+                🌫 Air Pollution
+                <p id="air" class="mt-2 text-muted d-none">
+                    Burning waste releases harmful gases causing diseases and global warming.
+                </p>
+            </li>
+
+            <li class="list-group-item" onclick="toggleContent('water')">
+                💧 Water Pollution
+                <p id="water" class="mt-2 text-muted d-none">
+                    Waste contaminates water harming aquatic life and humans.
+                </p>
+            </li>
+
+            <li class="list-group-item" onclick="toggleContent('soil')">
+                🌱 Soil Pollution
+                <p id="soil" class="mt-2 text-muted d-none">
+                    Chemicals reduce soil fertility and crop productivity.
+                </p>
+            </li>
+
+            <li class="list-group-item" onclick="toggleContent('health')">
+                🦠 Health Issues
+                <p id="health" class="mt-2 text-muted d-none">
+                    Waste spreads diseases like dengue and malaria.
+                </p>
+            </li>
+        </ul>
+    </div>
+
+    <!-- SOLUTIONS -->
+    <div class="mt-4" data-aos="fade-left">
+        <h4 class="text-success">💡 Solutions</h4>
+
+        <ul class="list-group">
+            <li class="list-group-item" onclick="toggleContent('seg')">
+                ♻ Segregation
+                <p id="seg" class="mt-2 text-muted d-none">
+                    Separate wet and dry waste at home.
+                </p>
+            </li>
+
+            <li class="list-group-item" onclick="toggleContent('rec')">
+                🔄 Recycling
+                <p id="rec" class="mt-2 text-muted d-none">
+                    Recycling reduces pollution and saves resources.
+                </p>
+            </li>
+
+            <li class="list-group-item" onclick="toggleContent('plastic')">
+                🚫 Reduce Plastic
+                <p id="plastic" class="mt-2 text-muted d-none">
+                    Avoid single-use plastics.
+                </p>
+            </li>
+
+            <li class="list-group-item" onclick="toggleContent('compost')">
+                🌱 Composting
+                <p id="compost" class="mt-2 text-muted d-none">
+                    Convert kitchen waste into fertilizer.
+                </p>
+            </li>
+        </ul>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="mt-4" data-aos="fade-up">
+        <h5>🌱 Your Awareness Level</h5>
+
+        <div class="progress" style="height:25px;">
+            <div id="progressBar"
+                 class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                 style="width:20%">
+                20%
+            </div>
+        </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="mt-4 text-center" data-aos="zoom-in">
+
+        <h4>🧠 Awareness Quiz</h4>
+
+        <p id="questionText">Loading...</p>
+
+        <div id="quizOptions"></div>
+
+        <p id="quizResult" class="mt-3 fw-bold"></p>
+
+        <button class="btn btn-primary mt-2" onclick="nextQuestion()">Next</button>
+
+    </div>
+
+</div>
+
+<script>
+AOS.init({ duration: 1000 });
+
+// COUNTERS
+function animate(id, target) {
+    let count = 0;
+    let interval = setInterval(() => {
+        count += Math.ceil(target / 50);
+        if (count >= target) {
+            count = target;
+            clearInterval(interval);
+        }
+        document.getElementById(id).innerText = count;
+    }, 40);
+}
+
+animate("waste", 2000);
+animate("recycleStat", 35);
+animate("plasticStat", 80);
+
+// TOGGLE
+function toggleContent(id) {
+    document.getElementById(id).classList.toggle("d-none");
+}
+
+// QUIZ DATA
+const quizData = [
+    {
+        question: "Which of these is biodegradable?",
+        options: ["Plastic", "Food Waste", "Glass"],
+        answer: "Food Waste"
+    },
+    {
+        question: "Which helps reduce pollution?",
+        options: ["Burning waste", "Recycling", "Dumping waste"],
+        answer: "Recycling"
+    },
+    {
+        question: "Best method for kitchen waste?",
+        options: ["Burn", "Dump", "Compost"],
+        answer: "Compost"
+    },
+    {
+        question: "Which harms oceans?",
+        options: ["Plastic", "Leaves", "Paper"],
+        answer: "Plastic"
+    },
+    {
+        question: "Best waste management practice?",
+        options: ["Segregation", "Mix waste", "Burn waste"],
+        answer: "Segregation"
+    }
+];
+
+let currentQ = 0;
+let progress = 20;
+
+// LOAD QUESTION
+function loadQuestion() {
+    let q = quizData[currentQ];
+    document.getElementById("questionText").innerText = q.question;
+
+    let optionsHTML = "";
+    q.options.forEach(opt => {
+        optionsHTML += `<button class="btn btn-outline-primary m-2" onclick="checkAnswer('${opt}')">${opt}</button>`;
+    });
+
+    document.getElementById("quizOptions").innerHTML = optionsHTML;
+    document.getElementById("quizResult").innerText = "";
+}
+
+// CHECK
+function checkAnswer(ans) {
+    let result = document.getElementById("quizResult");
+
+    if (ans === quizData[currentQ].answer) {
+        result.innerHTML = "✅ Correct!";
+        progress += 15;
+    } else {
+        result.innerHTML = "❌ Wrong!";
+    }
+
+    if (progress > 100) progress = 100;
+
+    let bar = document.getElementById("progressBar");
+    bar.style.width = progress + "%";
+    bar.innerText = progress + "%";
+}
+
+// NEXT
+function nextQuestion() {
+    currentQ++;
+
+    if (currentQ < quizData.length) {
+        loadQuestion();
+    } else {
+        document.getElementById("questionText").innerText = "🎯 Quiz Completed!";
+        document.getElementById("quizOptions").innerHTML = "";
+        document.getElementById("quizResult").innerText = "Great job! 🌱";
+    }
+}
+
+// INIT
+loadQuestion();
+</script>
+
+{% endblock %}

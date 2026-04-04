@@ -1,0 +1,80 @@
+[
+    {
+        "user": "Gayatri Suma",
+        "result": "Non-Recyclable",
+        "image": "static/uploads\\1.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Organic",
+        "image": "static/uploads\\1f962803384fdb322c4df8ad882b6176.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Organic",
+        "image": "static/uploads\\00vid-skorea-waste-21719-cover-superJumbo.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Hazardous",
+        "image": "static/uploads\\01-e-waste-millions-tons_-_Copy.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Hazardous",
+        "image": "static/uploads\\6ft-Fluorescent-Box-Gallery-Image-1.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Hazardous",
+        "image": "static/uploads\\09109-scicon-lightbulbcxd_-_Copy.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Recyclable",
+        "image": "static/uploads\\02-zero-waste-plastic_3x4.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Non-Recyclable",
+        "image": "static/uploads\\aluminum-can-recycling.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Recyclable",
+        "image": "static/uploads\\Dasani_web_3.6303e0c91079d.png"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Recyclable",
+        "image": "static/uploads\\stock-photo-recycle-aluminum-metal-crushed-can-waste-background-2163017067.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Recyclable",
+        "image": "static/uploads\\ESTAL-WILD-GLASS-1024x576.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Recyclable",
+        "image": "static/uploads\\01_bottle_mm9070_190418_2400-2_16x9.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "result": "Non-Recyclable",
+        "image": "static/uploads\\117581598_gettyimages-957361834_anindianboysearchesforremainfoodinpolythenepacketsatroadside.jpg"
+    },
+    {
+        "user": "Gayatri Suma",
+        "type": "camera",
+        "result": "Non-Recyclable",
+        "confidence": 51.58,
+        "image": "static/uploads\\camera.png"
+    },
+    {
+        "user": "Gayatri Suma",
+        "type": "text",
+        "input": "bottle",
+        "result": "Recyclable"
+    }
+]

@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* FADE ANIMATION */
+.fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* CARD HOVER */
+.section-box {
+    transition: 0.4s;
+}
+.section-box:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+}
+
+/* BUTTON ANIMATION */
+.btn {
+    transition: 0.3s;
+}
+.btn:hover {
+    transform: scale(1.1);
+}
+
+/* QUIZ EFFECT */
+#question, #options {
+    transition: all 0.4s ease;
+}
+</style>
+
+<div class="container text-center">
+
+<h2 class="mb-4 fade-in">📘 Smart Waste Learning Hub</h2>
+
+<div class="row">
+
+<!-- ORGANIC -->
+<div class="col-md-6 mt-4 fade-in">
+<div class="section-box text-start">
+
+<h3>🌱 Organic Waste</h3>
+
+<p>Organic waste decomposes naturally and returns nutrients to the soil.</p>
+
+<ul>
+<li>Food waste</li>
+<li>Vegetables</li>
+<li>Fruits</li>
+<li>Leaves</li>
+</ul>
+
+<b>Benefits:</b>
+<ul>
+<li>Composting 🌿</li>
+<li>Improves soil fertility</li>
+<li>Environment-friendly</li>
+</ul>
+
+</div>
+</div>
+
+<!-- RECYCLABLE -->
+<div class="col-md-6 mt-4 fade-in" style="animation-delay:0.2s;">
+<div class="section-box text-start">
+
+<h3>♻️ Recyclable Waste</h3>
+
+<p>These materials can be processed and reused to create new products.</p>
+
+<ul>
+<li>Plastic bottles</li>
+<li>Paper</li>
+<li>Glass</li>
+<li>Metal</li>
+</ul>
+
+<b>Benefits:</b>
+<ul>
+<li>Saves natural resources</li>
+<li>Reduces pollution</li>
+<li>Energy efficient</li>
+</ul>
+
+</div>
+</div>
+
+<!-- NON RECYCLABLE -->
+<div class="col-md-6 mt-4 fade-in" style="animation-delay:0.4s;">
+<div class="section-box text-start">
+
+<h3>🚯 Non-Recyclable Waste</h3>
+
+<p>Waste that cannot be reused or recycled easily.</p>
+
+<ul>
+<li>Sanitary waste</li>
+<li>Food wrappers</li>
+<li>Styrofoam</li>
+</ul>
+
+<b>Problems:</b>
+<ul>
+<li>Landfills increase</li>
+<li>Environmental pollution</li>
+<li>Long decomposition time</li>
+</ul>
+
+</div>
+</div>
+
+<!-- HAZARDOUS -->
+<div class="col-md-6 mt-4 fade-in" style="animation-delay:0.6s;">
+<div class="section-box text-start">
+
+<h3>⚠️ Hazardous Waste</h3>
+
+<p>Dangerous waste that can harm humans and the environment.</p>
+
+<ul>
+<li>Batteries</li>
+<li>Chemicals</li>
+<li>Medical waste</li>
+</ul>
+
+<b>Risks:</b>
+<ul>
+<li>Health problems</li>
+<li>Water and soil contamination</li>
+<li>Toxic exposure</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="section-box mt-5 text-start fade-in" style="animation-delay:0.8s;">
+
+<h3>🧠 Smart Quiz</h3>
+
+<p id="question"></p>
+
+<div id="options"></div>
+
+<p id="quizResult" class="mt-3 fw-bold"></p>
+
+<p class="mt-3"><b>Score:</b> <span id="score">0</span></p>
+
+<button class="btn btn-dark mt-3" onclick="nextQuestion()">Next</button>
+<button class="btn btn-danger mt-3" onclick="restartQuiz()">Restart</button>
+
+</div>
+
+</div>
+
+<script>
+let quiz = [
+{
+    q: "Banana peel belongs to?",
+    options: ["Organic", "Recyclable", "Hazardous"],
+    answer: "Organic"
+},
+{
+    q: "Plastic bottle is?",
+    options: ["Organic", "Recyclable", "Hazardous"],
+    answer: "Recyclable"
+},
+{
+    q: "Battery is?",
+    options: ["Organic", "Hazardous", "Recyclable"],
+    answer: "Hazardous"
+},
+{
+    q: "Food waste belongs to?",
+    options: ["Organic", "Non-Recyclable", "Hazardous"],
+    answer: "Organic"
+},
+{
+    q: "Used tissue belongs to?",
+    options: ["Recyclable", "Non-Recyclable", "Organic"],
+    answer: "Non-Recyclable"
+}
+];
+
+let index = 0;
+let score = 0;
+
+function loadQuestion() {
+    let q = quiz[index];
+
+    document.getElementById("question").style.opacity = 0;
+    document.getElementById("options").style.opacity = 0;
+
+    setTimeout(() => {
+        document.getElementById("question").innerText = q.q;
+
+        let optionsHTML = "";
+        q.options.forEach(opt => {
+            optionsHTML += `<button class="btn btn-outline-primary m-2" onclick="checkAnswer('${opt}')">${opt}</button>`;
+        });
+
+        document.getElementById("options").innerHTML = optionsHTML;
+
+        document.getElementById("question").style.opacity = 1;
+        document.getElementById("options").style.opacity = 1;
+
+    }, 300);
+}
+
+function checkAnswer(selected) {
+    if (selected === quiz[index].answer) {
+        document.getElementById("quizResult").innerHTML = "✅ Correct!";
+        score++;
+    } else {
+        document.getElementById("quizResult").innerHTML = "❌ Wrong!";
+    }
+
+    document.getElementById("score").innerText = score;
+}
+
+function nextQuestion() {
+    index++;
+
+    if (index >= quiz.length) {
+        document.getElementById("question").innerHTML = "🎉 Quiz Completed!";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("quizResult").innerHTML = "Final Score: " + score + "/" + quiz.length;
+        return;
+    }
+
+    document.getElementById("quizResult").innerHTML = "";
+    loadQuestion();
+}
+
+function restartQuiz() {
+    index = 0;
+    score = 0;
+    document.getElementById("score").innerText = score;
+    document.getElementById("quizResult").innerHTML = "";
+    loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+{% endblock %}

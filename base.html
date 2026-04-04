@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}SmartBin AI{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #eef2f3, #dfe9f3);
+    }
+
+    /* NAVBAR */
+    .navbar {
+        background: linear-gradient(90deg, #0f2027, #203a43, #2c5364);
+        padding: 12px 20px;
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+        font-size: 22px;
+        color: #fff;
+    }
+
+    /* NAV BUTTONS */
+    .nav-btn {
+        border-radius: 25px;
+        margin: 3px;
+        transition: 0.3s;
+    }
+
+    .nav-btn:hover {
+        background: #00c6ff;
+        color: #000 !important;
+        transform: scale(1.05);
+    }
+
+    .active-link {
+        background: #00c6ff !important;
+        color: black !important;
+    }
+
+    /* SECTION BOX */
+    .section-box {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    /* CARDS */
+    .card {
+        border: none;
+        border-radius: 20px;
+        transition: 0.3s;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    /* BUTTONS */
+    .btn {
+        border-radius: 30px;
+    }
+
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+
+    <a class="navbar-brand">♻️ SmartBin AI</a>
+
+    <div class="ms-auto">
+
+        <a href="/home" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-house"></i> Home
+        </a>
+
+        <a href="/awareness" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-globe"></i> Awareness
+        </a>
+
+        <a href="/ai" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-cpu"></i> AI
+        </a>
+
+        <a href="/learn" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-book"></i> Learn
+        </a>
+
+        <a href="/compost" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-tree"></i> Compost
+        </a>
+
+        <a href="/recycle" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-recycle"></i> Recycling
+        </a>
+
+        <a href="/dashboard" class="btn btn-outline-light nav-btn">
+            <i class="bi bi-bar-chart"></i> Dashboard
+        </a>
+
+        <a href="/logout" class="btn btn-danger nav-btn">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+
+    </div>
+
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

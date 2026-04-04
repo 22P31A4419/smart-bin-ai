@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.8s;
+}
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-box:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+.card-box {
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+</style>
+
+<div class="section-box fade-in">
+
+<h2 class="text-center mb-3">♻️ Recycling</h2>
+<hr>
+
+<!-- 📘 INTRO -->
+<h4>📌 What is Recycling?</h4>
+<p>
+Recycling is the process of collecting and converting waste materials into reusable products.
+It plays a crucial role in reducing environmental pollution, conserving natural resources,
+and saving energy. Recycling helps in minimizing landfill waste and supports sustainable living.
+</p>
+
+<p>
+Materials such as plastic, paper, glass, and metals can be recycled and reused in manufacturing
+new products, thereby reducing the need for raw materials.
+</p>
+
+<hr>
+
+<!-- 🎯 IMPORTANCE -->
+<h4>🌍 Importance of Recycling</h4>
+<ul>
+<li>♻️ Reduces environmental pollution</li>
+<li>🌳 Saves natural resources like trees and minerals</li>
+<li>💧 Conserves water and energy</li>
+<li>🗑️ Reduces landfill waste</li>
+<li>🌱 Supports sustainable development</li>
+<li>🐾 Protects wildlife and ecosystems</li>
+</ul>
+
+<hr>
+
+<!-- 🔄 PROCESS -->
+<h4>🔄 Recycling Process</h4>
+<ol>
+<li>Collection of waste materials</li>
+<li>Segregation into categories</li>
+<li>Cleaning and processing</li>
+<li>Manufacturing new products</li>
+<li>Distribution and reuse</li>
+</ol>
+
+<hr>
+
+<!-- 📦 TYPES -->
+<h4>📦 Types of Recyclable Waste</h4>
+
+<div class="card-box">🟢 Plastic – bottles, covers, containers</div>
+<div class="card-box">🔵 Metal – aluminum cans, steel</div>
+<div class="card-box">🟡 Paper – newspapers, books, cardboard</div>
+<div class="card-box">⚪ Glass – bottles, jars</div>
+<div class="card-box">🟤 E-waste – mobiles, laptops, electronics</div>
+
+<hr>
+
+<!-- 🔍 SMART CHECK -->
+<h4>🔍 Smart Waste Checker</h4>
+
+<input id="itemInput" class="form-control w-50 mb-2"
+placeholder="Try: plastic bottle, newspaper, mobile phone...">
+
+<button class="btn btn-primary" onclick="checkRecycle()">Check</button>
+
+<p id="searchResult" class="fw-bold mt-2"></p>
+
+<hr>
+
+<!-- 📊 IMPACT -->
+<h4>📊 Recycling Impact Calculator</h4>
+
+<p>
+This calculator estimates how much environmental benefit you create by recycling waste items.
+</p>
+
+<input type="number" id="count" class="form-control w-50 mb-2"
+placeholder="Enter number of items">
+
+<button class="btn btn-success" onclick="calculateImpact()">Calculate</button>
+
+<p id="impactResult" class="fw-bold mt-2"></p>
+
+<hr>
+
+<!-- ⚠️ CHALLENGES -->
+<h4>⚠️ Challenges in Recycling</h4>
+<ul>
+<li>❌ Lack of awareness among people</li>
+<li>❌ Improper waste segregation</li>
+<li>❌ High processing costs</li>
+<li>❌ Contamination of recyclable materials</li>
+</ul>
+
+<hr>
+
+<!-- 🌟 SOLUTIONS -->
+<h4>🌟 Solutions</h4>
+<ul>
+<li>✔ Educate people about recycling</li>
+<li>✔ Use separate bins for waste</li>
+<li>✔ Encourage government initiatives</li>
+<li>✔ Promote eco-friendly habits</li>
+</ul>
+
+<hr>
+
+<!-- 🌍 ECO FACT -->
+<h4>🌍 Eco Fact</h4>
+
+<button class="btn btn-info" onclick="showFact()">Show Fact</button>
+<p id="factResult" class="fw-bold mt-2"></p>
+
+<hr>
+
+<!-- 🧠 QUIZ -->
+<h4>🧠 Recycling Quiz</h4>
+
+<p><b>Score:</b> <span id="score">0</span> | ⏱️ Time: <span id="timer">10</span>s</p>
+
+<p id="question"></p>
+
+<button class="btn btn-outline-primary m-2" onclick="answer('yes')">Yes</button>
+<button class="btn btn-outline-primary m-2" onclick="answer('no')">No</button>
+
+<p id="quizResult" class="fw-bold mt-2"></p>
+
+<hr>
+
+<div class="text-center mt-4">
+<h4>🌍 Save Environment by Recycling!</h4>
+<p>Every small step makes a big difference. Start recycling today.</p>
+<a href="/learn" class="btn btn-success">Learn More</a>
+</div>
+
+</div>
+
+<script>
+// ANIMATION
+const el = document.querySelector('.fade-in');
+window.addEventListener('load', () => el.classList.add('show'));
+
+// SMART CHECK
+function checkRecycle() {
+    let item = document.getElementById("itemInput").value.toLowerCase().trim();
+
+    const categories = {
+        "Plastic": ["bottle", "plastic", "cover", "bag"],
+        "Paper": ["paper", "newspaper", "book"],
+        "Metal": ["can", "steel"],
+        "Glass": ["glass", "jar"],
+        "E-Waste": ["mobile", "laptop"],
+        "Organic": ["food", "fruit"],
+        "Hazardous": ["battery", "chemical"]
+    };
+
+    for (let category in categories) {
+        for (let word of categories[category]) {
+            if (item.includes(word)) {
+                document.getElementById("searchResult").innerText =
+                "Result: " + category;
+                return;
+            }
+        }
+    }
+
+    document.getElementById("searchResult").innerText = "Not identified";
+}
+
+// IMPACT
+function calculateImpact() {
+    let c = document.getElementById("count").value;
+    if (c) {
+        document.getElementById("impactResult").innerHTML =
+        "🌍 CO₂ Saved: " + (c * 0.2) + " kg <br> 💧 Water Saved: " + (c * 2) + " L";
+    }
+}
+
+// ECO FACT
+function showFact() {
+    let facts = [
+        "Recycling saves energy 🔋",
+        "Glass is 100% recyclable ♻️",
+        "Paper saves trees 🌳",
+        "Plastic harms oceans 🌊",
+        "Recycling reduces pollution 🌍"
+    ];
+    document.getElementById("factResult").innerText =
+    facts[Math.floor(Math.random()*facts.length)];
+}
+
+// QUIZ
+let quizData = [
+    { q: "Can glass be recycled?", a: "yes" },
+    { q: "Can plastic be recycled?", a: "yes" },
+    { q: "Should batteries go in bins?", a: "no" }
+];
+
+let currentQ = 0, score = 0, time = 10, timerInterval;
+
+function loadQuestion() {
+    document.getElementById("question").innerText = quizData[currentQ].q;
+    time = 10;
+    document.getElementById("timer").innerText = time;
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = time;
+        if (time === 0) nextQuestion();
+    }, 1000);
+}
+
+function answer(ans) {
+    if (ans === quizData[currentQ].a) {
+        score++;
+        document.getElementById("quizResult").innerHTML = "Correct!";
+    } else {
+        document.getElementById("quizResult").innerHTML = "Wrong!";
+    }
+
+    document.getElementById("score").innerText = score;
+    nextQuestion();
+}
+
+function nextQuestion() {
+    clearInterval(timerInterval);
+    currentQ = (currentQ + 1) % quizData.length;
+
+    setTimeout(() => {
+        document.getElementById("quizResult").innerHTML = "";
+        loadQuestion();
+    }, 800);
+}
+
+loadQuestion();
+
+</script>
+
+{% endblock %}

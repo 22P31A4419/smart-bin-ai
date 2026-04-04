@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5 text-center">
+
+<!-- HEADER WITH CLEAR BUTTON -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>📊 Dashboard</h2>
+
+    <button class="btn btn-danger" onclick="clearHistory()">
+        🗑 Clear History
+    </button>
+</div>
+
+<!-- STATS -->
+<div class="row mt-4">
+
+<div class="col-md-3">
+<div class="card bg-primary text-white p-4 card-hover shadow">
+<h5>Total Uploads</h5>
+<h2>{{ stats.Organic + stats['Recyclable'] + stats['Hazardous'] + stats['Non-Recyclable'] }}</h2>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card bg-success text-white p-4 card-hover shadow">
+<h5>Organic</h5>
+<h2>{{ stats.Organic }}</h2>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card bg-warning text-white p-4 card-hover shadow">
+<h5>Recyclable</h5>
+<h2>{{ stats['Recyclable'] }}</h2>
+</div>
+</div>
+
+<div class="col-md-3">
+<div class="card bg-danger text-white p-4 card-hover shadow">
+<h5>Hazardous</h5>
+<h2>{{ stats['Hazardous'] }}</h2>
+</div>
+</div>
+
+</div>
+
+<!-- CHART -->
+<div class="mt-5">
+<canvas id="chart"></canvas>
+</div>
+
+<!-- POINTS -->
+<div class="mt-5">
+<h4>🏆 Your Points</h4>
+<h2 class="text-success">
+{{ stats.Organic*5 + stats['Recyclable']*10 }}
+</h2>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="mt-5">
+<h4>🏆 Leaderboard</h4>
+
+{% if leaderboard %}
+    {% for user, points in leaderboard.items() %}
+        <p>{{user}} - {{points}} pts</p>
+    {% endfor %}
+{% else %}
+    <p class="text-muted">No leaderboard data</p>
+{% endif %}
+
+</div>
+
+<!-- MAP -->
+<div class="mt-5">
+<h4>📍 Nearby Recycling Centers</h4>
+<iframe width="100%" height="300"
+src="https://www.google.com/maps?q=recycling+center+near+me&output=embed"></iframe>
+</div>
+
+<!-- HISTORY -->
+<div class="mt-5">
+<h4>🧾 History</h4>
+
+{% if history %}
+<div class="row">
+{% for h in history %}
+<div class="col-md-3">
+<div class="card p-2 shadow mb-3 card-hover">
+<p class="fw-bold">{{h.result}}</p>
+<img src="/{{h.image}}" class="img-fluid rounded">
+</div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No history available</p>
+{% endif %}
+
+</div>
+
+</div>
+
+<!-- CHART SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('chart'), {
+    type: 'bar',
+    data: {
+        labels: ['Organic','Recyclable','Hazardous','Non-Recyclable'],
+        datasets: [{
+            data: [
+                {{stats.Organic}},
+                {{stats['Recyclable']}},
+                {{stats['Hazardous']}},
+                {{stats['Non-Recyclable']}}
+            ]
+        }]
+    }
+});
+</script>
+
+<!-- CLEAR HISTORY SCRIPT -->
+<script>
+function clearHistory() {
+    if (confirm("⚠ Are you sure you want to clear all history?")) {
+
+        fetch("/clear_history", {
+            method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            location.reload();
+        })
+        .catch(() => {
+            alert("❌ Error clearing history");
+        });
+
+    }
+}
+</script>
+
+{% endblock %}

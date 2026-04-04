@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+.section-box {
+    padding: 20px;
+    border-radius: 15px;
+    background: #f8f9fa;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+.section-box:hover {
+    transform: translateY(-5px);
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(20px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+.loader {
+    display: none;
+    font-weight: bold;
+}
+</style>
+
+<div class="container text-center fade-in">
+
+<h2 class="mb-4">🤖 AI Waste Identifier</h2>
+
+<div class="row g-4">
+
+<!-- IMAGE UPLOAD -->
+<div class="col-md-4">
+<div class="section-box">
+<h4>📂 Upload Image</h4>
+
+<form action="/predict" method="POST" enctype="multipart/form-data" onsubmit="showLoader()">
+<input type="file" name="image" class="form-control mt-3" required>
+<button class="btn btn-primary mt-3 w-100">Predict</button>
+</form>
+
+</div>
+</div>
+
+<!-- CAMERA -->
+<div class="col-md-4">
+<div class="section-box">
+
+<h4>📸 Camera</h4>
+
+<video id="video" autoplay playsinline muted width="100%" class="mt-3 rounded border"></video>
+
+<div class="mt-3">
+<button class="btn btn-success me-2" onclick="startCamera()">▶ Start</button>
+<button class="btn btn-danger me-2" onclick="stopCamera()">⏹ Stop</button>
+<button class="btn btn-dark" onclick="capture()">📸 Capture</button>
+</div>
+
+<canvas id="canvas" style="display:none;"></canvas>
+
+<!-- Camera Result -->
+<div id="cameraResult" class="mt-3"></div>
+
+</div>
+</div>
+
+<!-- TEXT INPUT -->
+<div class="col-md-4">
+<div class="section-box">
+
+<h4>📝 Text Input</h4>
+
+<form action="/text_predict" method="POST" onsubmit="showLoader()">
+<input type="text" name="text" class="form-control mt-3" placeholder="Enter waste (e.g., plastic bottle)" required>
+<button class="btn btn-warning mt-3 w-100">Analyze</button>
+</form>
+
+</div>
+</div>
+
+</div>
+
+<!-- LOADER -->
+<div class="loader mt-4" id="loader">
+⏳ Processing...
+</div>
+
+<!-- IMAGE RESULT -->
+{% if prediction %}
+<div class="section-box mt-5 fade-in">
+
+<h3>✅ Result: {{ prediction }}</h3>
+<p><b>Confidence:</b> {{ confidence }}%</p>
+
+<img src="{{ image_path }}" width="200" class="rounded mt-3 shadow">
+
+<h4 class="mt-4">♻️ Disposal Methods</h4>
+<ul class="list-group mt-3">
+{% for m in methods %}
+<li class="list-group-item">{{ m }}</li>
+{% endfor %}
+</ul>
+
+</div>
+{% endif %}
+
+<!-- TEXT RESULT -->
+{% if text_result %}
+<div class="section-box mt-5 fade-in">
+
+<h3>📝 Result: {{ text_result }}</h3>
+
+{% if user_text %}
+<p><b>Your Input:</b> {{ user_text }}</p>
+{% endif %}
+
+<h4 class="mt-3">♻️ Disposal Methods</h4>
+<ul class="list-group mt-3">
+{% for m in methods %}
+<li class="list-group-item">{{ m }}</li>
+{% endfor %}
+</ul>
+
+</div>
+{% endif %}
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+let stream = null;
+
+// LOADER
+function showLoader() {
+    document.getElementById("loader").style.display = "block";
+}
+
+// START CAMERA
+async function startCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+            audio: false
+        });
+
+        const video = document.getElementById('video');
+        video.srcObject = stream;
+        video.play();
+
+    } catch (err) {
+        alert("Camera access denied ❌");
+    }
+}
+
+// STOP CAMERA
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+        document.getElementById('video').srcObject = null;
+    }
+}
+
+// CAPTURE (WITHOUT STOPPING CAMERA)
+function capture() {
+    if (!stream) {
+        alert("Start camera first ⚠️");
+        return;
+    }
+
+    let video = document.getElementById('video');
+    let canvas = document.getElementById('canvas');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    let ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    let data = canvas.toDataURL("image/png");
+
+    document.getElementById("cameraResult").innerHTML = "⏳ Processing...";
+
+    fetch('/predict_camera', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: data })
+    })
+    .then(res => res.json())
+    .then(d => {
+        document.getElementById("cameraResult").innerHTML = `
+            <div class="alert alert-success mt-3">
+                <b>Result:</b> ${d.result} <br>
+                <b>Confidence:</b> ${d.confidence}%
+            </div>
+        `;
+    });
+}
+</script>
+
+{% endblock %}

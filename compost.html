@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- 🎉 CONFETTI -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.8s;
+}
+.fade-in.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-box {
+    transition: 0.4s;
+}
+.section-box:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.hidden {
+    display: none;
+}
+
+.progress {
+    height: 20px;
+}
+</style>
+
+<div class="section-box fade-in">
+
+<h2 class="text-center mb-3">🌱 Composting</h2>
+
+<hr>
+
+<h4>📌 What is Composting?</h4>
+<p>
+Composting is a natural biological process in which microorganisms break down organic waste into nutrient-rich fertilizer.
+It reduces landfill waste and improves soil fertility.
+</p>
+
+<hr>
+
+<h4>🔬 How Composting Works?</h4>
+<ul>
+<li>🦠 Microorganisms break waste</li>
+<li>🌡 Heat is generated</li>
+<li>💨 Oxygen supports process</li>
+<li>💧 Moisture is required</li>
+</ul>
+
+<hr>
+
+<h4>♻️ Types of Waste</h4>
+<ul>
+<li>🍌 Fruit peels</li>
+<li>🍚 Food waste</li>
+<li>🍂 Leaves</li>
+<li>☕ Coffee</li>
+<li>🥚 Eggshells</li>
+</ul>
+
+<hr>
+
+<h4>⚙️ Composting Steps</h4>
+<ol>
+<li>Collect waste</li>
+<li>Add dry leaves</li>
+<li>Maintain moisture</li>
+<li>Mix regularly</li>
+<li>Wait 2–6 weeks</li>
+</ol>
+
+<hr>
+
+<h4>🌟 Benefits</h4>
+<ul>
+<li>🌍 Reduces pollution</li>
+<li>🌱 Improves soil</li>
+<li>💧 Retains water</li>
+<li>♻️ Eco-friendly</li>
+</ul>
+
+<hr>
+
+<!-- 🧮 CALCULATOR -->
+<h4>🧮 Compost Time Calculator</h4>
+
+<select id="wasteType" class="form-control w-50 mb-2">
+<option value="">Select Waste</option>
+<option value="banana">Banana Peel</option>
+<option value="leaves">Leaves</option>
+<option value="paper">Paper</option>
+</select>
+
+<button class="btn btn-primary" onclick="calculateTime()">Check Time</button>
+
+<p id="timeResult" class="mt-2 fw-bold"></p>
+
+<hr>
+
+<!-- 🎯 TOGGLE -->
+<h4>🎯 Do’s & Don’ts</h4>
+
+<button class="btn btn-success m-2" onclick="toggle('dos')">Show Do’s</button>
+<button class="btn btn-danger m-2" onclick="toggle('donts')">Show Don’ts</button>
+
+<div id="dos" class="hidden">
+<ul>
+<li>✔ Fruits & vegetables</li>
+<li>✔ Dry leaves</li>
+<li>✔ Coffee grounds</li>
+</ul>
+</div>
+
+<div id="donts" class="hidden">
+<ul>
+<li>❌ Plastic</li>
+<li>❌ Meat</li>
+<li>❌ Chemicals</li>
+</ul>
+</div>
+
+<hr>
+
+<!-- 📊 UPDATED PROGRESS -->
+<h4>📊 Compost Progress</h4>
+
+<div class="progress mb-2">
+  <div id="progressBar" class="progress-bar bg-success" style="width: 0%">0%</div>
+</div>
+
+<p id="progressText" class="fw-bold text-success"></p>
+
+<button class="btn btn-dark" onclick="updateProgress()">Update Progress</button>
+
+<hr>
+
+<!-- 🤖 AI TIPS -->
+<h4>🤖 Smart Compost Tips</h4>
+
+<select id="material" class="form-control w-50 mb-2">
+<option value="">Select Material</option>
+<option value="wet">Wet Waste</option>
+<option value="dry">Dry Waste</option>
+<option value="mixed">Mixed Waste</option>
+</select>
+
+<button class="btn btn-info" onclick="getTip()">Get Tip</button>
+
+<p id="tipResult" class="mt-2 fw-bold"></p>
+
+<hr>
+
+<!-- 🧠 QUIZ -->
+<h4>🧠 Quick Compost Quiz</h4>
+
+<p>Can plastic be composted?</p>
+
+<button class="btn btn-outline-primary m-2" onclick="check('no')">No</button>
+<button class="btn btn-outline-primary m-2" onclick="check('yes')">Yes</button>
+
+<p id="quizResult" class="fw-bold mt-2"></p>
+
+<hr>
+
+<div class="text-center mt-4">
+<h4>🌟 Start Composting Today!</h4>
+<a href="/learn" class="btn btn-success">Learn More</a>
+</div>
+
+</div>
+
+<script>
+// 🌟 FADE ANIMATION
+const el = document.querySelector('.fade-in');
+function show() {
+    const pos = el.getBoundingClientRect().top;
+    if (pos < window.innerHeight - 100) {
+        el.classList.add('show');
+    }
+}
+window.addEventListener('scroll', show);
+window.addEventListener('load', show);
+
+// 🧮 CALCULATOR
+function calculateTime() {
+    let type = document.getElementById("wasteType").value;
+    let result = "";
+
+    if (type === "banana") result = "⏳ 2–5 weeks";
+    else if (type === "leaves") result = "⏳ 3–6 months";
+    else if (type === "paper") result = "⏳ 2–6 weeks";
+    else result = "Select valid option";
+
+    document.getElementById("timeResult").innerText = result;
+}
+
+// 🎯 TOGGLE
+function toggle(id) {
+    document.getElementById("dos").style.display = "none";
+    document.getElementById("donts").style.display = "none";
+    document.getElementById(id).style.display = "block";
+}
+
+// 📊 UPDATED PROGRESS (STEP-BY-STEP)
+let progress = 0;
+
+function updateProgress() {
+
+    if (progress < 100) {
+        progress += 20;
+
+        let bar = document.getElementById("progressBar");
+
+        bar.style.width = progress + "%";
+        bar.innerText = progress + "%";
+
+        if (progress == 20) {
+            document.getElementById("progressText").innerHTML = "🟤 Stage 1: Waste Collection";
+        }
+        else if (progress == 40) {
+            document.getElementById("progressText").innerHTML = "🌡 Stage 2: Decomposition Started";
+        }
+        else if (progress == 60) {
+            document.getElementById("progressText").innerHTML = "♻️ Stage 3: Active Breakdown";
+        }
+        else if (progress == 80) {
+            document.getElementById("progressText").innerHTML = "🌱 Stage 4: Almost Ready";
+        }
+        else if (progress == 100) {
+            document.getElementById("progressText").innerHTML = "🎉 Compost Ready!";
+
+            // 🎉 CONFETTI
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 }
+            });
+        }
+
+    } else {
+        alert("✅ Compost already completed!");
+    }
+}
+
+// 🤖 AI TIPS
+function getTip() {
+    let m = document.getElementById("material").value;
+    let tip = "";
+
+    if (m === "wet") tip = "💡 Add dry leaves";
+    else if (m === "dry") tip = "💡 Add water";
+    else if (m === "mixed") tip = "💡 Maintain balance";
+    else tip = "Select material";
+
+    document.getElementById("tipResult").innerText = tip;
+}
+
+// 🧠 QUIZ
+function check(ans) {
+    if (ans === "no") {
+        document.getElementById("quizResult").innerHTML = "✅ Correct!";
+    } else {
+        document.getElementById("quizResult").innerHTML = "❌ Wrong!";
+    }
+}
+</script>
+
+{% endblock %}
