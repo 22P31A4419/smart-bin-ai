@@ -6,7 +6,7 @@
 
 <div class="container mt-5 text-center">
 
-<!-- HEADER WITH CLEAR BUTTON -->
+<!-- HEADER -->
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>📊 Dashboard</h2>
 
@@ -19,30 +19,32 @@
 <div class="row mt-4">
 
 <div class="col-md-3">
-<div class="card bg-primary text-white p-4 card-hover shadow">
+<div class="card bg-primary text-white p-4 shadow">
 <h5>Total Uploads</h5>
-<h2>{{ stats.Organic + stats['Recyclable'] + stats['Hazardous'] + stats['Non-Recyclable'] }}</h2>
+<h2 id="totalUploads">
+{{ stats.Organic + stats['Recyclable'] + stats['Hazardous'] + stats['Non-Recyclable'] }}
+</h2>
 </div>
 </div>
 
 <div class="col-md-3">
-<div class="card bg-success text-white p-4 card-hover shadow">
+<div class="card bg-success text-white p-4 shadow">
 <h5>Organic</h5>
-<h2>{{ stats.Organic }}</h2>
+<h2 id="organic">{{ stats.Organic }}</h2>
 </div>
 </div>
 
 <div class="col-md-3">
-<div class="card bg-warning text-white p-4 card-hover shadow">
+<div class="card bg-warning text-white p-4 shadow">
 <h5>Recyclable</h5>
-<h2>{{ stats['Recyclable'] }}</h2>
+<h2 id="recyclable">{{ stats['Recyclable'] }}</h2>
 </div>
 </div>
 
 <div class="col-md-3">
-<div class="card bg-danger text-white p-4 card-hover shadow">
+<div class="card bg-danger text-white p-4 shadow">
 <h5>Hazardous</h5>
-<h2>{{ stats['Hazardous'] }}</h2>
+<h2 id="hazardous">{{ stats['Hazardous'] }}</h2>
 </div>
 </div>
 
@@ -56,7 +58,7 @@
 <!-- POINTS -->
 <div class="mt-5">
 <h4>🏆 Your Points</h4>
-<h2 class="text-success">
+<h2 class="text-success" id="points">
 {{ stats.Organic*5 + stats['Recyclable']*10 }}
 </h2>
 </div>
@@ -86,11 +88,12 @@ src="https://www.google.com/maps?q=recycling+center+near+me&output=embed"></ifra
 <div class="mt-5">
 <h4>🧾 History</h4>
 
+<div id="historySection">
 {% if history %}
 <div class="row">
 {% for h in history %}
 <div class="col-md-3">
-<div class="card p-2 shadow mb-3 card-hover">
+<div class="card p-2 shadow mb-3">
 <p class="fw-bold">{{h.result}}</p>
 <img src="/{{h.image}}" class="img-fluid rounded">
 </div>
@@ -100,6 +103,7 @@ src="https://www.google.com/maps?q=recycling+center+near+me&output=embed"></ifra
 {% else %}
 <p class="text-muted">No history available</p>
 {% endif %}
+</div>
 
 </div>
 
@@ -108,7 +112,7 @@ src="https://www.google.com/maps?q=recycling+center+near+me&output=embed"></ifra
 <!-- CHART SCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-new Chart(document.getElementById('chart'), {
+let chart = new Chart(document.getElementById('chart'), {
     type: 'bar',
     data: {
         labels: ['Organic','Recyclable','Hazardous','Non-Recyclable'],
@@ -135,7 +139,21 @@ function clearHistory() {
         .then(res => res.json())
         .then(data => {
             alert(data.message);
-            location.reload();
+
+            // 🔥 Update UI without reload
+            document.getElementById("totalUploads").innerText = 0;
+            document.getElementById("organic").innerText = 0;
+            document.getElementById("recyclable").innerText = 0;
+            document.getElementById("hazardous").innerText = 0;
+            document.getElementById("points").innerText = 0;
+
+            // Clear history section
+            document.getElementById("historySection").innerHTML = 
+                "<p class='text-muted'>No history available</p>";
+
+            // Reset chart
+            chart.data.datasets[0].data = [0,0,0,0];
+            chart.update();
         })
         .catch(() => {
             alert("❌ Error clearing history");
