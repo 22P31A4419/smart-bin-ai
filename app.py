@@ -42,20 +42,51 @@ def save_json(file, data):
     with open(file, 'w') as f:
         json.dump(data, f, indent=4)
 
+# 🔥 SMART PREDICTION FUNCTION
 def predict_image(path):
     if model is None:
-        return "Model not loaded", 0
+        return "Model not loaded", 0, 0, 0
 
     img = image.load_img(path, target_size=(224, 224))
     img_array = image.img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
-    pred = model.predict(img_array)
-    index = np.argmax(pred)
-    confidence = round(float(np.max(pred)) * 100, 2)
+    pred = model.predict(img_array)[0]
 
-    return classes[index], confidence
+    top_index = np.argmax(pred)
+    top_conf = float(pred[top_index])
+    second_conf = float(sorted(pred)[-2])
 
+    confidence = round(top_conf * 100, 2)
+    result = classes[top_index]
+
+    return result, confidence, top_conf, second_conf
+
+# ===== METHODS =====
+def get_methods(result):
+    return {
+        "Organic Waste (Biodegradable)": [
+            "Convert into compost 🌱",
+            "Use for gardening"
+        ],
+        "Recyclable Waste": [
+            "Send to recycling center ♻️",
+            "Reuse items"
+        ],
+        "Hazardous Waste": [
+            "Dispose safely ⚠️"
+        ],
+        "Non-Recyclable Waste": [
+            "Reduce usage"
+        ],
+        "Mixed Waste": [
+            "⚠ Contains multiple waste types",
+            "Please separate items"
+        ],
+        "Hazardous (E-Waste)": [
+            "Give to e-waste center ⚠️"
+        ]
+    }.get(result, [])
 
 # ===== AUTH =====
 @app.route('/', methods=['GET', 'POST'])
@@ -73,7 +104,6 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -90,12 +120,10 @@ def register():
 
     return render_template('register.html')
 
-
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect('/')
-
 
 # ===== HOME =====
 @app.route('/home')
@@ -104,8 +132,13 @@ def home():
         return redirect('/')
     return render_template('home.html')
 
+# ===== PAGES =====
+@app.route('/ai')
+def ai():
+    if 'user' not in session:
+        return redirect('/')
+    return render_template('ai_identifier.html')
 
-# ===== STATIC PAGES =====
 @app.route('/awareness')
 def awareness():
     return render_template('info.html')
@@ -122,15 +155,6 @@ def compost():
 def recycle():
     return render_template('recycling.html')
 
-
-# ===== AI PAGE =====
-@app.route('/ai')
-def ai():
-    if 'user' not in session:
-        return redirect('/')
-    return render_template('ai_identifier.html')
-
-
 # ===== IMAGE PREDICTION =====
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -146,11 +170,23 @@ def predict():
     path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(path)
 
-    result, confidence = predict_image(path)
+    result, confidence, top_conf, second_conf = predict_image(path)
+
+    labels = {
+        "Organic": "Organic Waste (Biodegradable)",
+        "Recyclable": "Recyclable Waste",
+        "Hazardous": "Hazardous Waste",
+        "Non-Recyclable": "Non-Recyclable Waste"
+    }
+
+    # 🔥 SMART MIXED WASTE LOGIC
+    if confidence < 60 and (top_conf - second_conf) < 0.2:
+        result = "Mixed Waste"
+    else:
+        result = labels.get(result, result)
 
     methods = get_methods(result)
 
-    # Save history
     history = load_json(HISTORY_FILE)
     history.append({
         "user": session['user'],
@@ -169,7 +205,6 @@ def predict():
         methods=methods
     )
 
-
 # ===== CAMERA =====
 @app.route('/predict_camera', methods=['POST'])
 def predict_camera():
@@ -185,11 +220,13 @@ def predict_camera():
         with open(path, "wb") as f:
             f.write(base64.b64decode(image_data))
 
-        result, confidence = predict_image(path)
+        result, confidence, top_conf, second_conf = predict_image(path)
+
+        if confidence < 60 and (top_conf - second_conf) < 0.2:
+            result = "Mixed Waste"
 
         methods = get_methods(result)
 
-        # Save history
         history = load_json(HISTORY_FILE)
         history.append({
             "user": session['user'],
@@ -206,9 +243,8 @@ def predict_camera():
             "methods": methods
         })
 
-    except Exception as e:
+    except:
         return jsonify({"result": "Error", "confidence": 0})
-
 
 # ===== TEXT AI =====
 @app.route('/text_predict', methods=['POST'])
@@ -218,71 +254,29 @@ def text_predict():
 
     text = request.form.get('text', '').lower().strip()
 
-    # 🔥 SMART KEYWORD DATABASE
     categories = {
-        "Organic": [
-            "food", "vegetable", "fruit", "leaves", "peels",
-            "kitchen", "banana", "rice", "bread", "waste"
-        ],
-        "Recyclable": [
-            "plastic", "paper", "glass", "bottle", "can",
-            "cardboard", "newspaper", "box", "container"
-        ],
-        "Hazardous": [
-            "battery", "chemical", "paint", "medicine",
-            "acid", "spray", "toxic"
-        ],
-        "E-Waste": [
-            "mobile", "phone", "laptop", "charger",
-            "tv", "computer", "electronics", "earphones"
-        ]
+        "Organic": ["food","fruit","vegetable","banana","rice","bread"],
+        "Recyclable": ["plastic","paper","glass","bottle","can"],
+        "Hazardous": ["battery","chemical","paint","medicine"],
+        "E-Waste": ["mobile","laptop","charger","tv","computer"]
     }
 
-    # 🔥 SMART MATCHING (sentence-based)
     scores = {cat: 0 for cat in categories}
 
-    for cat, keywords in categories.items():
-        for word in keywords:
-            if word in text:   # 👈 IMPORTANT CHANGE
-                scores[cat] += 1
+    for cat, words in categories.items():
+        for w in words:
+            if w in text:
+                scores[cat] += 2
 
     best = max(scores, key=scores.get)
 
     if scores[best] == 0:
-        result = "Non-Recyclable"
+        result = "Non-Recyclable Waste"
     else:
-        result = "Hazardous (E-Waste)" if best == "E-Waste" else best
+        result = "Hazardous (E-Waste)" if best == "E-Waste" else best + " Waste"
 
-    # 🔥 DISPOSAL METHODS
-    disposal_methods = {
-        "Organic": [
-            "Compost at home 🌱",
-            "Use in gardening",
-            "Make natural fertilizer"
-        ],
-        "Recyclable": [
-            "Put in recycling bin ♻️",
-            "Reuse or donate items",
-            "Send to recycling center"
-        ],
-        "Hazardous": [
-            "Dispose at special facility ⚠️",
-            "Do not mix with regular waste"
-        ],
-        "Hazardous (E-Waste)": [
-            "Give to e-waste center ⚠️",
-            "Return to electronics shop"
-        ],
-        "Non-Recyclable": [
-            "Reduce usage",
-            "Avoid plastic items",
-            "Dispose in landfill"
-        ]
-    }
+    methods = get_methods(result)
 
-    methods = disposal_methods.get(result, [])
-
-    # 💾 SAVE HISTORY
     history = load_json(HISTORY_FILE)
     history.append({
         "user": session['user'],
@@ -297,19 +291,7 @@ def text_predict():
         text_result=result,
         user_text=text,
         methods=methods
-    )    
-
-
-# ===== METHODS =====
-def get_methods(result):
-    return {
-        "Organic": ["Compost at home 🌱", "Use for gardening"],
-        "Recyclable": ["Send to recycling center ♻️", "Reuse items"],
-        "Hazardous": ["Dispose at special facility ⚠️"],
-        "Hazardous (E-Waste)": ["Give to e-waste center ⚠️"],
-        "Non-Recyclable": ["Reduce usage", "Send to landfill"]
-    }.get(result, [])
-
+    )
 
 # ===== DASHBOARD =====
 @app.route('/dashboard')
@@ -321,20 +303,28 @@ def dashboard():
     user_history = [h for h in all_history if h.get('user') == session['user']]
 
     stats = {"Organic":0, "Recyclable":0, "Hazardous":0, "Non-Recyclable":0}
+
+    for h in user_history:
+        result = h.get('result', '')
+        if "Organic" in result:
+            stats["Organic"] += 1
+        elif "Recyclable" in result:
+            stats["Recyclable"] += 1
+        elif "Hazardous" in result:
+            stats["Hazardous"] += 1
+        else:
+            stats["Non-Recyclable"] += 1
+
     leaderboard = {}
-
     for h in all_history:
-        result = h.get('result')
         user = h.get('user', 'guest')
-
-        if result in stats:
-            stats[result] += 1
+        result = h.get('result', '')
 
         leaderboard[user] = leaderboard.get(user, 0)
 
-        if result == "Recyclable":
+        if "Recyclable" in result:
             leaderboard[user] += 10
-        elif result == "Organic":
+        elif "Organic" in result:
             leaderboard[user] += 5
 
     leaderboard = dict(sorted(leaderboard.items(), key=lambda x: x[1], reverse=True))
@@ -345,7 +335,6 @@ def dashboard():
         history=user_history,
         leaderboard=leaderboard
     )
-
 
 # ===== CLEAR HISTORY =====
 @app.route('/clear_history', methods=['POST'])
@@ -358,7 +347,6 @@ def clear_history():
     save_json(HISTORY_FILE, updated)
 
     return jsonify({"message": "✅ History cleared"})
-
 
 # ===== RUN =====
 if __name__ == '__main__':
