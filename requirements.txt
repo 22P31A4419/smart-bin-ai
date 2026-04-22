@@ -1,6 +1,6 @@
 Flask==2.3.2
 gunicorn
-numpy
+numpy==1.23.5
 Pillow
 Werkzeug
 tensorflow-cpu==2.12.0
